@@ -1,6 +1,6 @@
 # Implementation of Høst et al's approach
 
-Concept Analysis Plugin is a IntelliJ IDE plugin for extracting uniqueness of JUnit tests to improve the quality of existing tests.
+This is the reimplementation of Høst et al's approach.
 
 ## Installation
 
