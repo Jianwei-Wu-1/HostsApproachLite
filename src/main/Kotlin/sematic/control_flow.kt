@@ -6,7 +6,7 @@ fun handleFor(
     statement: PsiForStatement
 ): Pair<String, String>? {
 
-    val condition = statement.condition.toString()
+    val condition = statement.condition.toString().split(":")[1]
 
     if (condition.isNotEmpty()){
         return Pair(condition, "loop")
@@ -19,7 +19,7 @@ fun handleDoWhile(
     statement: PsiDoWhileStatement
 ): Pair<String, String>? {
 
-    val condition = statement.condition.toString()
+    val condition = statement.condition.toString().split(":")[1]
 
     if (condition.isNotEmpty()){
         return Pair(condition, "loop")
@@ -32,7 +32,7 @@ fun handleWhile(
     statement: PsiWhileStatement
 ): Pair<String, String>? {
 
-    val condition = statement.condition.toString()
+    val condition = statement.condition.toString().split(":")[1]
 
     if (condition.isNotEmpty()){
         return Pair(condition, "loop")
@@ -45,7 +45,7 @@ fun handleForEach(
     statement: PsiForeachStatement
 ): Pair<String, String>? {
 
-    val condition = statement.iteratedValue.toString() + " under " + statement.iterationParameter.name
+    val condition = statement.iteratedValue.toString().split(":")[1] + " under " + statement.iterationParameter.name
 
     if (condition.isNotEmpty()){
         return Pair(condition, "loop")
@@ -58,10 +58,10 @@ fun handleIf(
     statement: PsiIfStatement
 ): Pair<String, String>? {
 
-    val condition = statement.condition.toString()
+    val condition = statement.condition.toString().split(":")[1]
 
     if (condition.isNotEmpty()){
-        return Pair(condition, "loop")
+        return Pair(condition, "if")
     }
 
     return null

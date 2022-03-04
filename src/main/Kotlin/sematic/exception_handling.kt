@@ -21,7 +21,7 @@ fun handleThrow(
     statement: PsiThrowStatement
 ): Pair<String, String>? {
 
-    val exception = statement.exception.toString()
+    val exception = statement.exception?.type?.presentableText.orEmpty()
 
     if (exception != ""){
 

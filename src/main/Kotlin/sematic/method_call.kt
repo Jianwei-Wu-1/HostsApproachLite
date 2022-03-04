@@ -18,7 +18,7 @@ fun handleMethodCall(
 
         if (loweredMethodCall.startsWith(map[0]?.first.orEmpty().toLowerCase())){
 
-            return Pair(map[0]?.first.orEmpty(), "Same verb call")
+            return Pair(rName, "Same verb call")
         }
     }
 
@@ -27,5 +27,5 @@ fun handleMethodCall(
         return Pair(rName, "Same name call")
     }
 
-    return null
+    return Pair(rName, "Isolated call")
 }

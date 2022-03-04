@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.*
 import edu.udel.phrase.convert2Phrase
 import edu.udel.phrase.updateMap
+import edu.udel.ruleset.*
 import edu.udel.sematic.*
 import edu.udel.util.testMethods
 import opennlp.tools.postag.POSModel
@@ -18,12 +19,13 @@ import kotlin.collections.HashMap
 
 
 //Todo: Add your own path here
-const val nlp_path = "/Users/wujianwei/IdeaProjects/HostsApproachLite/nlp"
+const val NLP_PATH = "/Users/wujianwei/IdeaProjects/HostsApproachLite/nlp"
+const val FRACTION = Int.MAX_VALUE
 
 fun parseNameBits(name: String): Pair<String, String> {
 
-    val inputStream = FileInputStream("$nlp_path/en-token.bin")
-    val inputStreamPOS = FileInputStream("$nlp_path/en-pos-perceptron.bin")
+    val inputStream = FileInputStream("$NLP_PATH/en-token.bin")
+    val inputStreamPOS = FileInputStream("$NLP_PATH/en-pos-perceptron.bin")
 
     val model = TokenizerModel(inputStream)
     val tokenizer = TokenizerME(model)
@@ -70,6 +72,13 @@ fun handleProject(project: Project){
 
         println("\n\nAnalyzing class: " + testClass.name + " ...")
 
+        val methodCallBase = MethodCallBase(testClass, FRACTION).checkCountingRule()
+        val objectBase = ObjectBase(testClass, FRACTION).checkCountingRule()
+        val getDataBase = GetDataBase(testClass, FRACTION).checkCountingRule()
+        val loopBase = LoopBase(testClass, FRACTION).checkCountingRule()
+        val returnBase = ReturnBase(testClass, FRACTION).checkCountingRule()
+        val exceptionBase = ExceptionBase(testClass, FRACTION).checkCountingRule()
+
         for (test in testClass.testMethods()) {
 
             println("\ntest: ${test.name}")
@@ -87,21 +96,24 @@ fun handleProject(project: Project){
                 }
             }
 
-            println("\nwords: $words")
+            //println("\nwords: $words")
 
             for (i in 0 until words.size){
 
                  map[i] = parseNameBits(words[i])
             }
 
-            //Todo: connect name logic here
-            println(convert2Phrase(map))
+            val existingName = convert2Phrase(map)
 
-            val getClassResult =  handleGetClass(test)
+            println(existingName)
 
-            if (getClassResult != null){
+            var implementationName = ""
 
-                println(getClassResult.toString())
+            val getClassResult = handleGetClass(test)
+
+            if (getClassResult != null && getDataBase.contains(getClassResult.first)){
+
+                implementationName += getClassResult.first
             }
 
             val statements = test.body?.statements?.asList().orEmpty()
@@ -118,18 +130,18 @@ fun handleProject(project: Project){
 
                             val result = handleMethodCall(expression, updateMap(map), test)
 
-                            if (result != null){
+                            if (result != null && methodCallBase.contains(result.first)){
 
-                                println(result.toString())
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiAssignmentExpression -> {
 
                             val result = handleAssignmentExpression(expression)
 
-                            if (result != null){
+                            if (result != null && objectBase.contains(result.first)){
 
-                                println(result.toString())
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                     }
@@ -142,86 +154,88 @@ fun handleProject(project: Project){
 
                             val result = handleDeclarationStatement(statement)
 
-                            if (result != null){
+                            if (result != null && objectBase.contains(result.first)){
 
-                                println(result.toString())
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiReturnStatement -> {
 
                             val result = handleReturn(statement)
 
-                            if (result != null){
+                            if (result != null && returnBase.contains(result.first)){
 
-                                println(result.toString())
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiDoWhileStatement -> {
 
                             val result = handleDoWhile(statement)
 
-                            if (result != null){
+                            if (result != null && loopBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiForStatement -> {
 
                             val result = handleFor(statement)
 
-                            if (result != null){
+                            if (result != null && loopBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiIfStatement -> {
 
                             val result = handleIf(statement)
 
-                            if (result != null){
+                            if (result != null && loopBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiForeachStatement -> {
 
                             val result = handleForEach(statement)
 
-                            if (result != null){
+                            if (result != null && loopBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiWhileStatement -> {
 
                             val result = handleWhile(statement)
 
-                            if (result != null){
+                            if (result != null && loopBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiThrowStatement -> {
 
                             val result = handleThrow(statement)
 
-                            if (result != null){
+                            if (result != null && exceptionBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                         is PsiTryStatement -> {
 
                             val result = handleTryCatch(statement)
 
-                            if (result != null){
+                            if (result != null && exceptionBase.contains(result.first)){
 
-                                println(result)
+                                implementationName += if (implementationName.contains(result.first)) "" else result.first
                             }
                         }
                     }
                 }
             }
+
+            println("Produced Name: $implementationName for ${test.name}")
         }
     }
 }
