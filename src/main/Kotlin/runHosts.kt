@@ -13,9 +13,14 @@ import opennlp.tools.tokenize.TokenizerME
 import opennlp.tools.tokenize.TokenizerModel
 import util.testClasses
 import org.apache.commons.lang.*
+import java.io.File
 import java.io.FileInputStream
 import java.util.*
 import kotlin.collections.HashMap
+import java.io.FileOutputStream
+import java.io.PrintStream
+
+
 
 
 //Todo: Add your own path here
@@ -36,6 +41,10 @@ fun parseNameBits(name: String): Pair<String, String> {
     val testName = StringUtils.join(nameBitsArray, " ").orEmpty()
     val tokens = tokenizer.tokenize(testName).orEmpty()
     val tags = tagger.tag(tokens).orEmpty()
+
+    if (tokens.isEmpty() || tags.isEmpty()){
+        return Pair("", "")
+    }
 
     val word = tokens[0].trim()
     val tag = tags[0].trim()
@@ -63,6 +72,11 @@ fun parseTestName(name:  String): MutableList<String> {
 }
 
 fun handleProject(project: Project){
+
+//    val out = File("/Users/wujianwei/IdeaProjects/HostsApproachLite/output.txt")
+//    val pt = PrintStream(out)
+//    println(out.absolutePath)
+//    System.setOut(pt)
 
     val actualTests = HashSet<PsiMethod>()
 

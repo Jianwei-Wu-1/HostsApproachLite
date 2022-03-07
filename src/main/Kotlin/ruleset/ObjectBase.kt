@@ -45,11 +45,11 @@ class ObjectBase(tclass: PsiClass, fraction: Int){
 
                         val declaredObject = statement.declaredElements.toList()
 
-                        if (declaredObject.isNotEmpty()){
+                        if (declaredObject.isNotEmpty() && (declaredObject[0] is PsiLocalVariable)){
 
                             val variable = declaredObject[0] as PsiLocalVariable
 
-                            val value = "{variable.type.presentableText}+${variable.name}"
+                            val value = "${variable.type.presentableText}+${variable.name}"
 
                             total++;
 

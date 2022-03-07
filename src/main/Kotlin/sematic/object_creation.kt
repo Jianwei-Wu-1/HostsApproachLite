@@ -17,7 +17,7 @@ fun handleDeclarationStatement(
 
     val declaredObject = statement.declaredElements.toList()
 
-    if (declaredObject.isNotEmpty()){
+    if (declaredObject.isNotEmpty() && (declaredObject[0] is PsiLocalVariable)){
 
         val variable = declaredObject[0] as PsiLocalVariable
 
