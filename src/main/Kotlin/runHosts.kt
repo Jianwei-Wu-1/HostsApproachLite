@@ -20,9 +20,6 @@ import kotlin.collections.HashMap
 import java.io.FileOutputStream
 import java.io.PrintStream
 
-
-
-
 //Todo: Add your own path here
 const val NLP_PATH = "/Users/wujianwei/IdeaProjects/HostsApproachLite/nlp"
 const val FRACTION = Int.MAX_VALUE
@@ -64,7 +61,7 @@ fun parseTestName(name:  String): MutableList<String> {
     else if (name.contains("-")){
 
         return name.split("-").toMutableList()
-    }
+    }t
     //Kebab case
 
     return StringUtils.splitByCharacterTypeCamelCase(name).toMutableList()
