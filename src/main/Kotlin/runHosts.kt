@@ -61,7 +61,7 @@ fun parseTestName(name:  String): MutableList<String> {
     else if (name.contains("-")){
 
         return name.split("-").toMutableList()
-    }t
+    }
     //Kebab case
 
     return StringUtils.splitByCharacterTypeCamelCase(name).toMutableList()
